@@ -6,4 +6,6 @@ taught in the video linked below!
   * URL: https://www.youtube.com/watch?v=oBt53YbR9Kk
   * Channel URL: https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ
 
-Developed with Windows 10, Python 3.8.
+Other Notes:
+* I did not implement any of the examples using tabulation method 
+* Developed with Windows 10, Python 3.8.
