@@ -33,14 +33,8 @@ def can_construct_brute(target: str, word_bank: Iterable[str]):
 def can_construct_1(target: str, word_bank: Iterable[str], memo: dict = {}):
     if target in memo:
         return memo[target]
-    if target == "":
-        return True
-    for word in word_bank:
-        if target.startswith(word):
-            memo[target] = can_construct_1(target[len(word):], word_bank)
-            if memo[target]:
-                return True
-    return False
+    memo[target] = _run_recursive(target, word_bank, can_construct_1)
+    return memo[target]
 
 
 @recursive_timer

@@ -8,13 +8,12 @@ add up to exactly the target sum.
 If there is a tie for the shortest combination, you may return any one of the shortest.
 """
 import functools
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Callable
 
 from core.decorators import memoize, recursive_timer
 
 
-@recursive_timer
-def best_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
+def _run_recursive(target_sum, numbers, func: Callable):
     if target_sum == 0:
         return []
     elif target_sum < 0:
@@ -22,7 +21,7 @@ def best_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int
     shortest_combination = None
 
     for num in numbers:
-        branch_result = best_sum_brute(target_sum - num, numbers)
+        branch_result = func(target_sum - num, numbers)
         if branch_result is None:
             continue  # on to next number
 
@@ -32,6 +31,11 @@ def best_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int
         ):
             shortest_combination = branch_result
     return shortest_combination
+
+
+@recursive_timer
+def best_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
+    return _run_recursive(target_sum, numbers, best_sum_brute)
 
 
 @recursive_timer
@@ -64,23 +68,7 @@ def best_sum_1(
 @memoize
 # @functools.lru_cache
 def best_sum_2(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
-    if target_sum == 0:
-        return []
-    elif target_sum < 0:
-        return None
-    shortest_combination = None
-
-    for num in numbers:
-        branch_result = best_sum_2(target_sum - num, numbers)
-        if branch_result is None:
-            continue  # on to next number
-
-        branch_result = [num] + branch_result
-        if shortest_combination is None or len(branch_result) < len(
-            shortest_combination
-        ):
-            shortest_combination = branch_result
-    return shortest_combination
+    return _run_recursive(target_sum, numbers, best_sum_2)
 
 
 if __name__ == "__main__":

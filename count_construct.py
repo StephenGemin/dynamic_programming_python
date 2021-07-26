@@ -34,15 +34,8 @@ def count_construct(target: str, word_bank: Iterable[str]):
 def count_construct_1(target: str, word_bank: Iterable[str], memo: dict = {}):
     if target in memo:
         return memo[target]
-    if target == "":
-        return 1
-
-    count = 0
-    for word in word_bank:
-        if target.startswith(word):
-            memo[target] = count_construct_1(target[len(word) :], word_bank)
-            count += memo[target]
-    return count
+    memo[target] = _run_recursive(target, word_bank, count_construct_1)
+    return memo[target]
 
 
 @recursive_timer
@@ -53,7 +46,7 @@ def count_construct_2(target: str, word_bank: Iterable[str]):
 
 
 if __name__ == "__main__":
-    target = "eeeeeeeeeeeeeeeeeeeeeef"
+    target = "eeeeeeeeeeeeeeeeeeeeeeef"
     word_bank = ("e", "ee", "eee", "eeee", "eeeee", "eeeeee")
     result = 0
     assert count_construct(target, word_bank) == result

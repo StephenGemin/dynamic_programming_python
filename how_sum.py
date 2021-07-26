@@ -7,13 +7,12 @@ to exactly the target sum. If there is no combination that adds up to the target
 then return None
 """
 import functools
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Callable
 
 from core.decorators import memoize, recursive_timer
 
 
-@recursive_timer
-def how_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
+def _run_recursive(target_sum, numbers, func: Callable):
     if target_sum == 0:
         return []
     elif target_sum < 0:
@@ -21,10 +20,15 @@ def how_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]
 
     for num in numbers:
         remainder = target_sum - num
-        branch_result = how_sum_brute(remainder, numbers)
+        branch_result = func(remainder, numbers)
         if branch_result is not None:
             return branch_result + [num]
     return None
+
+
+@recursive_timer
+def how_sum_brute(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
+    return _run_recursive(target_sum, numbers, how_sum_brute)
 
 
 @recursive_timer
@@ -33,18 +37,7 @@ def how_sum_1(
 ) -> Optional[List[int]]:
     if target_sum in memo:
         return memo[target_sum]
-    elif target_sum == 0:
-        return []
-    elif target_sum < 0:
-        return None
-
-    for num in numbers:
-        remainder = target_sum - num
-        branch_result = how_sum_1(remainder, numbers)
-        if branch_result is not None:
-            memo[target_sum] = branch_result + [num]
-        else:
-            memo[target_sum] = None
+    memo[target_sum] = _run_recursive(target_sum, numbers, how_sum_1)
     return memo[target_sum]
 
 
@@ -52,17 +45,7 @@ def how_sum_1(
 @memoize
 # @functools.lru_cache
 def how_sum_2(target_sum: int, numbers: Iterable[int]) -> Optional[List[int]]:
-    if target_sum == 0:
-        return []
-    elif target_sum < 0:
-        return None
-
-    for num in numbers:
-        remainder = target_sum - num
-        branch_result = how_sum_2(remainder, numbers)
-        if branch_result is not None:
-            return branch_result + [num]
-    return None
+    return _run_recursive(target_sum, numbers, how_sum_2)
 
 
 if __name__ == "__main__":
